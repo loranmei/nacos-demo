@@ -15,9 +15,65 @@ Nacos致力于帮助我们发现、配置和管理微服务。Nacos提供了一�
 ### 服务的注册与发现
 第一步：创建一个Spring Boot应用，编辑pom.xml，加入必要的依赖配置：
 
-![](md/Nacos服务注册与发现/SpringBoot-pom1.jpg)  
-![](md/Nacos服务注册与发现/SpringBoot-pom2.jpg)  
-![](md/Nacos服务注册与发现/SpringBoot-pom3.jpg)  
+```
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.0.5.RELEASE</version>
+    </parent>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <lombok.version>1.18.6</lombok.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>Finchley.SR1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>0.2.1.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--nacos服务发现-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        
+        <!--lombok注解-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+```
 
 上述内容主要三部分：
 1. parent：定义spring boot的版本
@@ -26,12 +82,36 @@ Nacos致力于帮助我们发现、配置和管理微服务。Nacos提供了一�
 
 第二步：创建应用主类，添加@EnableDiscoveryClient注解，并实现一个HTTP接口:
 
-![](md/Nacos服务注册与发现/SpringBoot-TestApplication.jpg)
+```
+@EnableDiscoveryClient
+@SpringBootApplication
+public class TestApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(TestApplication.class, args);
+    }
+
+    @Slf4j
+    @RestController
+    static class TestController {
+        @GetMapping("/hello")
+        public String hello(@RequestParam String name) {
+            return "hello " + name;
+        }
+    }
+}
+```
 
 第三步：添加配置  
 配置服务名称、端口和Nacos注册地址
 
-![](md/Nacos服务注册与发现/SpringBoot-properties.jpg)
+```
+spring.application.name=nacos-provider
+server.port=9301
+
+spring.cloud.nacos.discovery.server-addr=192.168.1.53:8848
+
+```
 
 第四步：启动应用，查看Nacos的服务列表页面
 地址：http://192.168.1.53:8848:8848/nacos/#/serviceManagement
@@ -57,7 +137,26 @@ Nacos致力于帮助我们发现、配置和管理微服务。Nacos提供了一�
 ### 创建应用测试配置
 第一步：创建一个Spring Boot应用，编辑pom.xml，加入必要的依赖配置：
 
-![](md/Nacos配置中心/创建应用测试Nacos配置pom.jpg)
+```
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--nacos配置中心-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+```
 
 上述内容主要三部分：
 1. Parent
@@ -69,12 +168,38 @@ Nacos致力于帮助我们发现、配置和管理微服务。Nacos提供了一�
 1. 添加title变量，映射到配置文件的myconfig.title的值
 2. 然后在http接口中返回该值
 
-![](md/Nacos配置中心/创建应用测试Nacos配置TestApplication.jpg)
+```
+@SpringBootApplication
+public class TestApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(TestApplication.class, args);
+    }
+
+    @Slf4j
+    @RestController
+    @RefreshScope
+    static class TestController {
+        @Value("${myconfig.title:}")
+        private String title;
+
+        @GetMapping("/test")
+        public String hello() {
+            return title;
+        }
+    }
+}
+```
 
 第三步：添加配置
 配置服务名称、端口和Nacos注册地址
 
-![](md/Nacos配置中心/创建应用测试Nacos配置properties.jpg)
+```
+spring.application.name=nacos-provider
+server.port=9301
+
+spring.cloud.nacos.config.server-addr=192.168.1.53:8848
+```
 
 第四步：启动应用，调用接口查看返回结果
 用curl或者postman等工具，访问接口: localhost:9301/test，一切正常的话，将返回Nacos中配置的值“nacos-provider”。
@@ -89,14 +214,24 @@ Nacos致力于帮助我们发现、配置和管理微服务。Nacos提供了一�
 
 第二步：修改conf/application.properties文件，增加支持MySQL数据源配置，添加（目前只支持mysql）数据源的url、用户名和密码。配置样例如下：
 
-![](md/配置持久化和集群部署/配置持久化和集群部署properties.jpg)
+```
+spring.datasource.platform=mysql
+db.num=1
+db.url.0=jdbc:mysql://192.168.1.53:3306/nacos_config?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true
+db.user=root
+db.password=Gykj123.
+```
 
 ### Nacos集群部署
 在Nacos的conf目录下有一个cluster.conf.example，可以直接把example扩展名去掉来使用，也可以单独创建一个cluster.conf文件，然后打开将后续要部署的Nacos实例地址配置在这里。
 
 以在本地不同端点启动3个Nacos服务端为例，可以如下配置：
 
-![](md/配置持久化和集群部署/配置持久化和集群部署ips.jpg)
+```
+192.168.1.53:8848
+192.168.1.54:8848
+192.168.1.55:8848
+```
 
 ### 启动Nacos实例
 在完成了上面的配置之后，我们就可以开始在各个节点上启动Nacos实例，以组建Nacos集群来使用了。
@@ -106,7 +241,7 @@ Linux平台分别启动3个Nacos服务（集群方式启动）：nohup sh startu
 1. 启动完成之后可以登录3个Nacos的服务管理页面，在服务列表页面都发现了nacos-provider服务，说明集群启动成功了（注：微服务只需要注册到nacos集群中的一个即可）。
 2. 如果Mysql数据库中已存在一些持久化配置那么在3个集群的配置页面就会显示出已有的配置信息，如果没有的话下面我们手动创建配置进行测试，在一个Nacos配置列表页面新建的配置会被同步显示在其他的Nacos配置列表页面。
 
-![](md/配置持久化和集群部署/配置持久化和集群部署nacos配置列表页面.jpg)
+![](md/Nacos配置中心/nacos配置列表页面.jpg)
 
 ## Nacos配置的多环境管理
 在Nacos中，本身有多个不同管理级别的概念，包括：Data ID、Group、Namespace。只要利用好这些层级概念的关系，就可以根据自己的需要来实现多环境的管理。
@@ -192,7 +327,10 @@ Spring应用对Nacos中配置内容的对应关系是通过下面三个参数控
 
 第二步：在Spring Cloud应用中通过使用spring.cloud.nacos.config. shared-dataids参数来配置要加载的这两个配置内容，比如：
 
-![](md/Nacos配置的多环境管理/Nacos多配置文件加载与共享配置2.jpg)
+```
+spring.cloud.nacos.config.shared-dataids=nacos-provider-oss.properties,nacos-provider-log.properties
+spring.cloud.nacos.config.refreshable-dataids=nacos-provider-oss.properties,nacos-provider-log.properties
+```
 
 1. spring.cloud.nacos.config.shared-dataids参数用来配置多个共享配置的Data Id，多个的时候用逗号分隔
 2. spring.cloud.nacos.config.refreshable-dataids参数用来定义哪些共享配置的Data Id在配置变化时，应用中可以动态刷新，多个Data Id之间用逗号隔开。如果没有明确配置，默认情况下所有共享配置都不支持动态刷新
@@ -205,39 +343,140 @@ Spring应用对Nacos中配置内容的对应关系是通过下面三个参数控
 
 我们修改启动参数，在启动jar包时添加-Dserver.port=9302或者-Dserver.port=9303，启动之后的效果如下图：
 
-![](md/Nacos服务消费方式/基础RestTemplate方式/nacos服务列表.jpg)
-![](md/Nacos服务消费方式/基础RestTemplate方式/nacos服务详情.jpg)
+![](md/Nacos服务消费方式/nacos服务列表.jpg)
+![](md/Nacos服务消费方式/nacos服务详情.jpg)
 
 接下来，实现一个应用来消费上面已经注册到Nacos的服务。
 第一步：创建一个Spring Boot应用，命名为：nacos-client。
 第二步：编辑pom.xml中的依赖内容，与上面服务提供者的一样即可。
 第三步：创建应用主类，并实现一个HTTP接口，在该接口中调用服务提供方的接口。
 
-![](md/Nacos服务消费方式/基础RestTemplate方式/创建TestApplication.jpg)
+```
+@EnableDiscoveryClient
+@SpringBootApplication
+public class TestApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(TestApplication.class, args);
+    }
+
+    @Slf4j
+    @RestController
+    static class TestController {
+
+        @Autowired
+        LoadBalancerClient loadBalancerClient;
+
+        @GetMapping("/test")
+        public String test() {
+            // 通过spring cloud common中的负载均衡接口选取服务提供节点实现接口调用
+            ServiceInstance serviceInstance = loadBalancerClient.choose("nacos-provider");
+            String url = serviceInstance.getUri() + "/hello?name=" + "gykj";
+            RestTemplate restTemplate = new RestTemplate();
+            String result = restTemplate.getForObject(url, String.class);
+            return "Invoke : " + url + ", return : " + result;
+        }
+    }
+}
+```
 
 这里使用了Spring Cloud Common中的LoadBalancerClient接口来挑选服务实例信息。然后从挑选出的实例信息中获取可访问的URI，拼接上服务提供方的接口规则来发起调用。
 
 第四步：配置服务名称和Nacos地址，让服务消费者可以发现上面已经注册到Nacos的服务。
 
-![](md/Nacos服务消费方式/基础RestTemplate方式/properties配置.jpg)
+```
+spring.application.name=nacos-client
+server.port=9304
+
+spring.cloud.nacos.config.server-addr=192.168.1.53:8848
+```
 
 第五步：启动服务消费者，然后通过curl或者postman等工具发起访问：localhost:9304/test
 
-![](md/Nacos服务消费方式/基础RestTemplate方式/curl测试接口负载均衡.jpg)
+```
+$ curl localhost:9304/test
+Invoke : http://localhost:9301/hello?name=didi, return : hello gykj
+$ curl localhost:9304/test
+Invoke : http://localhost:9302/hello?name=didi, return : hello gykj
+$ curl localhost:9304/test
+Invoke : http://localhost:9303/hello?name=didi, return : hello gykj
+```
 
 可以看到，两次不同请求的时候，真正实际调用的服务提供者实例是不同的，也就是说，通过LoadBalancerClient接口在获取服务实例的时候，已经实现了对服务提供方实例的负载均衡。
 
 ### 使用RestTemplate方式
 在上一个例子中，已经使用过RestTemplate来向服务的某个具体实例发起HTTP请求，但是具体的请求路径是通过拼接完成的，对于开发体验并不好。但是，实际上，在Spring Cloud中对RestTemplate做了增强，只需要稍加配置，就能简化之前的调用方式。
 
-![](md/Nacos服务消费方式/使用RestTemplate方式/创建TestApplication.jpg)
+```
+@EnableDiscoveryClient
+@SpringBootApplication
+public class TestApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(TestApplication.class, args);
+    }
+
+    @Slf4j
+    @RestController
+    static class TestController {
+
+        @Autowired
+        RestTemplate restTemplate;
+
+        @GetMapping("/test")
+        public String test() {
+            String result = restTemplate.getForObject("http://nacos-provider/hello?name=gykj", String.class);
+            return "Return : " + result;
+        }
+    }
+
+    @Bean
+    @LoadBalanced
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+}
+```
 
 可以看到，在定义RestTemplate的时候，增加了@LoadBalanced注解，而在真正调用服务接口的时候，原来host部分是通过手工拼接ip和端口的，直接采用服务名的时候来写请求路径即可。在真正调用的时候，Spring Cloud会将请求拦截下来，然后通过负载均衡器选出节点，并替换服务名部分为具体的ip和端口，从而实现基于服务名的负载均衡调用。
 
 ### 使用WebClient方式
 WebClient是Spring 5中最新引入的，可以将其理解为reactive版的RestTemplate。下面举个具体的例子，它将实现与上面RestTemplate一样的请求调用：
 
-![](md/Nacos服务消费方式/使用Feign方式/创建TestApplication.jpg)
+```
+@EnableDiscoveryClient
+@SpringBootApplication
+public class TestApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(TestApplication.class, args);
+    }
+
+    @Slf4j
+    @RestController
+    static class TestController {
+
+        @Autowired
+        private WebClient.Builder webClientBuilder;
+
+        @GetMapping("/test")
+        public Mono<String> test() {
+            Mono<String> result = webClientBuilder.build()
+                    .get()
+                    .uri("http://nacos-provider/hello?name=gykj")
+                    .retrieve()
+                    .bodyToMono(String.class);
+            return result;
+        }
+    }
+
+    @Bean
+    @LoadBalanced
+    public WebClient.Builder loadBalancedWebClientBuilder() {
+        return WebClient.builder();
+    }
+}
+```
 
 可以看到，在定义WebClient.Builder的时候，也增加了@LoadBalanced注解，其原理与之前的RestTemplate时一样的。
 
@@ -246,11 +485,45 @@ WebClient是Spring 5中最新引入的，可以将其理解为reactive版的Rest
 
 第一步：在pom.xml中增加openfeign的依赖：
 
-![](md/Nacos服务消费方式/使用Feign方式/pom依赖.jpg)
+```
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-openfeign</artifactId>
+</dependency>
+```
 
 第二步：定义Feign客户端和使用Feign客户端：
 
-![](md/Nacos服务消费方式/使用Feign方式/创建TestApplication.jpg)
+```
+@EnableDiscoveryClient
+@SpringBootApplication
+@EnableFeignClients
+public class TestApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(TestApplication.class, args);
+    }
+
+    @Slf4j
+    @RestController
+    static class TestController {
+        @Autowired
+        Client client;
+
+        @GetMapping("/test")
+        public String test() {
+            String result = client.hello("gykj");
+            return "Return : " + result;
+        }
+    }
+
+    @FeignClient("nacos-provider")
+    interface Client {
+        @GetMapping("/hello")
+        String hello(@RequestParam(name = "name") String name);
+    }
+}
+```
 
 这里主要先通过@EnableFeignClients注解开启扫描Spring Cloud Feign客户端的功能，然后又创建一个Feign的客户端接口定义。
 

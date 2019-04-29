@@ -37,7 +37,7 @@
             <optional>true</optional>
         </dependency>
 
-        <!--lombok get set-->
+        <!--lombok注解-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
