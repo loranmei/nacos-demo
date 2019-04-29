@@ -10,14 +10,14 @@ Nacos致力于帮助我们发现、配置和管理微服务。Nacos提供了一�
 4. Linux平台启动Nacos服务(单机版)：nohup sh startup.sh -m standalone &
 5. 启动完成之后，访问：http://192.168.1.53:8848/nacos/，进入Nacos的服务管理页面，登录页面中默认用户名密码为：nacos，首页面如下图：
 
-![](Nacos服务注册与发现/nacos启动首页.jpg)  
+![](md/Nacos服务注册与发现/nacos启动首页.jpg)  
 
 ### 服务的注册与发现
 第一步：创建一个Spring Boot应用，编辑pom.xml，加入必要的依赖配置：
 
-![](Nacos服务注册与发现/SpringBoot-pom1.jpg)  
-![](Nacos服务注册与发现/SpringBoot-pom2.jpg)  
-![](Nacos服务注册与发现/SpringBoot-pom3.jpg)  
+![](md/Nacos服务注册与发现/SpringBoot-pom1.jpg)  
+![](md/Nacos服务注册与发现/SpringBoot-pom2.jpg)  
+![](md/Nacos服务注册与发现/SpringBoot-pom3.jpg)  
 
 上述内容主要三部分：
 1. parent：定义spring boot的版本
@@ -26,28 +26,28 @@ Nacos致力于帮助我们发现、配置和管理微服务。Nacos提供了一�
 
 第二步：创建应用主类，添加@EnableDiscoveryClient注解，并实现一个HTTP接口:
 
-![](Nacos服务注册与发现/SpringBoot-TestApplication.jpg)
+![](md/Nacos服务注册与发现/SpringBoot-TestApplication.jpg)
 
 第三步：添加配置  
 配置服务名称、端口和Nacos注册地址
 
-![](Nacos服务注册与发现/SpringBoot-properties.jpg)
+![](md/Nacos服务注册与发现/SpringBoot-properties.jpg)
 
 第四步：启动应用，查看Nacos的服务列表页面
 地址：http://192.168.1.53:8848:8848/nacos/#/serviceManagement
 
-![](Nacos服务注册与发现/SpringBoot注册到Nacos服务列表.jpg)
+![](md/Nacos服务注册与发现/SpringBoot注册到Nacos服务列表.jpg)
 
 这里会显示当前注册的所有服务，以及每个服务的集群数目、实例数、健康实例数。点击详情，我们还能看到每个服务具体的实例信息，如下图所示：
 
-![](Nacos服务注册与发现/SpringBoot注册到Nacos服务详情.jpg)
+![](md/Nacos服务注册与发现/SpringBoot注册到Nacos服务详情.jpg)
 
 ## Nacos配置中心
 
 ### 创建配置
 进入Nacos的控制页面，在配置列表功能页面中，点击右上角的“+”按钮，进入“新建配置”页面，如下图填写内容：
 
-![](Nacos配置中心/创建Nacos配置.jpg)
+![](md/Nacos配置中心/创建Nacos配置.jpg)
 
 1. Data ID：填入nacos-provider.properties（nacos-provider是module的ArtifactId）
 2. Group：不修改，使用默认值DEFAULT_GROUP
@@ -57,7 +57,7 @@ Nacos致力于帮助我们发现、配置和管理微服务。Nacos提供了一�
 ### 创建应用测试配置
 第一步：创建一个Spring Boot应用，编辑pom.xml，加入必要的依赖配置：
 
-![](Nacos配置中心/创建应用测试Nacos配置pom.jpg)
+![](md/Nacos配置中心/创建应用测试Nacos配置pom.jpg)
 
 上述内容主要三部分：
 1. Parent
@@ -69,12 +69,12 @@ Nacos致力于帮助我们发现、配置和管理微服务。Nacos提供了一�
 1. 添加title变量，映射到配置文件的myconfig.title的值
 2. 然后在http接口中返回该值
 
-![](Nacos配置中心/创建应用测试Nacos配置TestApplication.jpg)
+![](md/Nacos配置中心/创建应用测试Nacos配置TestApplication.jpg)
 
 第三步：添加配置
 配置服务名称、端口和Nacos注册地址
 
-![](Nacos配置中心/创建应用测试Nacos配置properties.jpg)
+![](md/Nacos配置中心/创建应用测试Nacos配置properties.jpg)
 
 第四步：启动应用，调用接口查看返回结果
 用curl或者postman等工具，访问接口: localhost:9301/test，一切正常的话，将返回Nacos中配置的值“nacos-provider”。
@@ -89,14 +89,14 @@ Nacos致力于帮助我们发现、配置和管理微服务。Nacos提供了一�
 
 第二步：修改conf/application.properties文件，增加支持MySQL数据源配置，添加（目前只支持mysql）数据源的url、用户名和密码。配置样例如下：
 
-![](配置持久化和集群部署/配置持久化和集群部署properties.jpg)
+![](md/配置持久化和集群部署/配置持久化和集群部署properties.jpg)
 
 ### Nacos集群部署
 在Nacos的conf目录下有一个cluster.conf.example，可以直接把example扩展名去掉来使用，也可以单独创建一个cluster.conf文件，然后打开将后续要部署的Nacos实例地址配置在这里。
 
 以在本地不同端点启动3个Nacos服务端为例，可以如下配置：
 
-![](配置持久化和集群部署/配置持久化和集群部署ips.jpg)
+![](md/配置持久化和集群部署/配置持久化和集群部署ips.jpg)
 
 ### 启动Nacos实例
 在完成了上面的配置之后，我们就可以开始在各个节点上启动Nacos实例，以组建Nacos集群来使用了。
@@ -106,7 +106,7 @@ Linux平台分别启动3个Nacos服务（集群方式启动）：nohup sh startu
 1. 启动完成之后可以登录3个Nacos的服务管理页面，在服务列表页面都发现了nacos-provider服务，说明集群启动成功了（注：微服务只需要注册到nacos集群中的一个即可）。
 2. 如果Mysql数据库中已存在一些持久化配置那么在3个集群的配置页面就会显示出已有的配置信息，如果没有的话下面我们手动创建配置进行测试，在一个Nacos配置列表页面新建的配置会被同步显示在其他的Nacos配置列表页面。
 
-![](配置持久化和集群部署/配置持久化和集群部署nacos配置列表页面.jpg)
+![](md/配置持久化和集群部署/配置持久化和集群部署nacos配置列表页面.jpg)
 
 ## Nacos配置的多环境管理
 在Nacos中，本身有多个不同管理级别的概念，包括：Data ID、Group、Namespace。只要利用好这些层级概念的关系，就可以根据自己的需要来实现多环境的管理。
@@ -116,7 +116,7 @@ Data ID在Nacos中，我们可以理解为就是一个Spring Cloud应用的配�
 
 第一步：先在Nacos中，根据这个规则，创建两个不同环境的配置内容：
 
-![](Nacos配置的多环境管理/使用DataID与profiles实现.jpg)
+![](md/Nacos配置的多环境管理/使用DataID与profiles实现.jpg)
 
 如上图，我们为naocs-provider应用，定义了dev和test的两个独立的环境配置。我们可以在里面定义不同的内容值，以便后续验证是否真实加载到了正确的配置。
 
@@ -134,7 +134,7 @@ Group在Nacos中是用来对Data ID做集合管理的重要概念。例如：开
 
 第一步：先在Nacos中，通过区分Group来创建两个不同环境的配置内容：
 
-![](Nacos配置的多环境管理/使用DataID与profiles实现.jpg)
+![](md/Nacos配置的多环境管理/使用DataID与profiles实现.jpg)
 
 如上图，我们为nacos-provider应用，定义了DEV环境和TEST环境的两个独立的配置，这两个匹配与上一种方法不同，它们的Data ID是完全相同的，只是GROUP不同。
 
@@ -147,11 +147,11 @@ Namespace用于进行租户粒度的配置隔离。不同的命名空间下，�
 
 第一步：先在Nacos中，根据环境名称来创建多个Namespace。比如：
 
-![](Nacos配置的多环境管理/创建Namespace.jpg)
+![](md/Nacos配置的多环境管理/创建Namespace.jpg)
 
 第二步：在配置列表的最上方，可以看到除了Public之外，多了几个刚才创建的Namepsace。分别在DEV和TEST空间下为nacos-provider应用创建配置内容：
 
-![](Nacos配置的多环境管理/使用Namespace实现.jpg)
+![](md/Nacos配置的多环境管理/使用Namespace实现.jpg)
 
 第三步：在nacos-provider应用的配置文件中，增加Namespace的指定配置，比如：spring.cloud.nacos.config.namespace= 1e653ba4-eafb-46ef-9eff-33d30887dd9c。这里需要注意namespace的配置不是使用名称，而是使用Namespace的ID。
 
@@ -188,11 +188,11 @@ Spring应用对Nacos中配置内容的对应关系是通过下面三个参数控
 
 第一步：在Nacos中创建Data ID=nacos-provider-oss.properties，Group=DEFAULT_GROUP和Data ID=nacos-provider-log.properties，Group=DEFAULT_GROUP的配置内容。
 
-![](Nacos配置的多环境管理/Nacos多配置文件加载与共享配置1.jpg)
+![](md/Nacos配置的多环境管理/Nacos多配置文件加载与共享配置1.jpg)
 
 第二步：在Spring Cloud应用中通过使用spring.cloud.nacos.config. shared-dataids参数来配置要加载的这两个配置内容，比如：
 
-![](Nacos配置的多环境管理/Nacos多配置文件加载与共享配置2.jpg)
+![](md/Nacos配置的多环境管理/Nacos多配置文件加载与共享配置2.jpg)
 
 1. spring.cloud.nacos.config.shared-dataids参数用来配置多个共享配置的Data Id，多个的时候用逗号分隔
 2. spring.cloud.nacos.config.refreshable-dataids参数用来定义哪些共享配置的Data Id在配置变化时，应用中可以动态刷新，多个Data Id之间用逗号隔开。如果没有明确配置，默认情况下所有共享配置都不支持动态刷新
@@ -205,39 +205,39 @@ Spring应用对Nacos中配置内容的对应关系是通过下面三个参数控
 
 我们修改启动参数，在启动jar包时添加-Dserver.port=9302或者-Dserver.port=9303，启动之后的效果如下图：
 
-![](Nacos服务消费方式/基础RestTemplate方式/nacos服务列表.jpg)
-![](Nacos服务消费方式/基础RestTemplate方式/nacos服务详情.jpg)
+![](md/Nacos服务消费方式/基础RestTemplate方式/nacos服务列表.jpg)
+![](md/Nacos服务消费方式/基础RestTemplate方式/nacos服务详情.jpg)
 
 接下来，实现一个应用来消费上面已经注册到Nacos的服务。
 第一步：创建一个Spring Boot应用，命名为：nacos-client。
 第二步：编辑pom.xml中的依赖内容，与上面服务提供者的一样即可。
 第三步：创建应用主类，并实现一个HTTP接口，在该接口中调用服务提供方的接口。
 
-![](Nacos服务消费方式/基础RestTemplate方式/创建TestApplication.jpg)
+![](md/Nacos服务消费方式/基础RestTemplate方式/创建TestApplication.jpg)
 
 这里使用了Spring Cloud Common中的LoadBalancerClient接口来挑选服务实例信息。然后从挑选出的实例信息中获取可访问的URI，拼接上服务提供方的接口规则来发起调用。
 
 第四步：配置服务名称和Nacos地址，让服务消费者可以发现上面已经注册到Nacos的服务。
 
-![](Nacos服务消费方式/基础RestTemplate方式/properties配置.jpg)
+![](md/Nacos服务消费方式/基础RestTemplate方式/properties配置.jpg)
 
 第五步：启动服务消费者，然后通过curl或者postman等工具发起访问：localhost:9304/test
 
-![](Nacos服务消费方式/基础RestTemplate方式/curl测试接口负载均衡.jpg)
+![](md/Nacos服务消费方式/基础RestTemplate方式/curl测试接口负载均衡.jpg)
 
 可以看到，两次不同请求的时候，真正实际调用的服务提供者实例是不同的，也就是说，通过LoadBalancerClient接口在获取服务实例的时候，已经实现了对服务提供方实例的负载均衡。
 
 ### 使用RestTemplate方式
 在上一个例子中，已经使用过RestTemplate来向服务的某个具体实例发起HTTP请求，但是具体的请求路径是通过拼接完成的，对于开发体验并不好。但是，实际上，在Spring Cloud中对RestTemplate做了增强，只需要稍加配置，就能简化之前的调用方式。
 
-![](Nacos服务消费方式/使用RestTemplate方式/创建TestApplication.jpg)
+![](md/Nacos服务消费方式/使用RestTemplate方式/创建TestApplication.jpg)
 
 可以看到，在定义RestTemplate的时候，增加了@LoadBalanced注解，而在真正调用服务接口的时候，原来host部分是通过手工拼接ip和端口的，直接采用服务名的时候来写请求路径即可。在真正调用的时候，Spring Cloud会将请求拦截下来，然后通过负载均衡器选出节点，并替换服务名部分为具体的ip和端口，从而实现基于服务名的负载均衡调用。
 
 ### 使用WebClient方式
 WebClient是Spring 5中最新引入的，可以将其理解为reactive版的RestTemplate。下面举个具体的例子，它将实现与上面RestTemplate一样的请求调用：
 
-![](Nacos服务消费方式/使用Feign方式/创建TestApplication.jpg)
+![](md/Nacos服务消费方式/使用Feign方式/创建TestApplication.jpg)
 
 可以看到，在定义WebClient.Builder的时候，也增加了@LoadBalanced注解，其原理与之前的RestTemplate时一样的。
 
@@ -246,11 +246,11 @@ WebClient是Spring 5中最新引入的，可以将其理解为reactive版的Rest
 
 第一步：在pom.xml中增加openfeign的依赖：
 
-![](Nacos服务消费方式/使用Feign方式/pom依赖.jpg)
+![](md/Nacos服务消费方式/使用Feign方式/pom依赖.jpg)
 
 第二步：定义Feign客户端和使用Feign客户端：
 
-![](Nacos服务消费方式/使用Feign方式/创建TestApplication.jpg)
+![](md/Nacos服务消费方式/使用Feign方式/创建TestApplication.jpg)
 
 这里主要先通过@EnableFeignClients注解开启扫描Spring Cloud Feign客户端的功能，然后又创建一个Feign的客户端接口定义。
 
