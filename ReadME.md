@@ -457,6 +457,13 @@ public class TestApplication {
 WebClient是Spring 5中最新引入的，可以将其理解为reactive版的RestTemplate。下面举个具体的例子，它将实现与上面RestTemplate一样的请求调用：
 
 ```
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-webflux</artifactId>
+</dependency>
+```
+
+```
 @EnableDiscoveryClient
 @SpringBootApplication
 public class TestApplication {
