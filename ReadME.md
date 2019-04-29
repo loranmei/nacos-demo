@@ -201,8 +201,8 @@ server.port=9301
 spring.cloud.nacos.config.server-addr=192.168.1.53:8848
 ```
 
-第四步：启动应用，调用接口查看返回结果
-用curl或者postman等工具，访问接口: localhost:9301/test，一切正常的话，将返回Nacos中配置的值“nacos-provider”。
+第四步：启动应用，调用接口查看返回结果  
+用curl或者postman等工具，访问接口: localhost:9301/test，一切正常的话，将返回Nacos中配置的值“nacos-provider”。  
 然后，再通过Nacos页面，修改这个内容，点击发布之后，再访问接口，可以看到返回结果变了。
 
 ## 配置持久化和集群部署
@@ -295,18 +295,31 @@ Namespace用于进行租户粒度的配置隔离。不同的命名空间下，�
 ### 关于使用Group和使用Namespace的说明
 上面我们分别利用Nacos配置管理功能中的几个不同纬度来实现多环境的配置管理。从结果上而言，不论用哪一种方式，都能够胜任需求，但是哪一种最好呢？
 第一种：通过Data ID与profile实现。
+
 优点：这种方式与Spring Cloud Config的实现非常像，用过Spring Cloud Config的用户，可以毫无违和感的过渡过来，由于命名规则类似，所以要从Spring Cloud Config中做迁移也非常简单。
+
 缺点：这种方式在项目与环境多的时候，配置内容就会显得非常混乱。配置列表中会看到各种不同应用，不同环境的配置交织在一起，非常不利于管理。
+
 建议：项目不多时使用，或者可以结合Group对项目根据业务或者组织架构做一些拆分规划。
+
 第二种：通过Group实现。
+
 优点：通过Group按环境讲各个应用的配置隔离开。可以非常方便的利用Data ID和Group的搜索功能，分别从应用纬度和环境纬度来查看配置。
+
 缺点：由于会占用Group纬度，所以需要对Group的使用做好规划，毕竟与业务上的一些配置分组起冲突等问题。
+
 建议：这种方式虽然结构上比上一种更好一些，但是依然可能会有一些混乱，主要是在Group的管理上要做好规划和控制。
+
 第三种：通过Namespace实现。
+
 优点：官方建议的方式，通过Namespace来区分不同的环境，释放了Group的自由度，这样可以让Group的使用专注于做业务层面的分组管理。同时，Nacos控制页面上对于Namespace也做了分组展示，不需要搜索，就可以隔离开不同的环境配置，非常易用。
+
 缺点：没有啥缺点，可能就是多引入一个概念，需要用户去理解吧。
+
 建议：直接用这种方式长远上来说会比较省心。虽然可能对小团队而言，项目不多，第一第二方式也够了，但是万一后面做大了呢？
+
 **注意**：
+
 不论用哪一种方式实现。对于指定环境的配置（spring.profiles.active=dev、spring.cloud.nacos.config.group=DEV_GROUP、spring.cloud.nacos.config.namespace= 1e653ba4-eafb-46ef-9eff-33d30887dd9c），都不要配置在应用的bootstrap.properties中。而是在发布脚本的启动命令中，用-Dspring.profiles.active=DEV的方式来动态指定，会更加灵活！。
 
 ### Nacos多配置文件加载与共享配置
@@ -346,10 +359,10 @@ spring.cloud.nacos.config.refreshable-dataids=nacos-provider-oss.properties,naco
 ![](md/Nacos服务消费方式/nacos服务列表.jpg)
 ![](md/Nacos服务消费方式/nacos服务详情.jpg)
 
-接下来，实现一个应用来消费上面已经注册到Nacos的服务。
-第一步：创建一个Spring Boot应用，命名为：nacos-client。
-第二步：编辑pom.xml中的依赖内容，与上面服务提供者的一样即可。
-第三步：创建应用主类，并实现一个HTTP接口，在该接口中调用服务提供方的接口。
+接下来，实现一个应用来消费上面已经注册到Nacos的服务。  
+第一步：创建一个Spring Boot应用，命名为：nacos-client。  
+第二步：编辑pom.xml中的依赖内容，与上面服务提供者的一样即可。  
+第三步：创建应用主类，并实现一个HTTP接口，在该接口中调用服务提供方的接口。  
 
 ```
 @EnableDiscoveryClient
