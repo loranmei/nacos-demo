@@ -408,11 +408,11 @@ spring.cloud.nacos.config.server-addr=192.168.1.53:8848
 
 ```
 $ curl localhost:9304/test
-Invoke : http://localhost:9301/hello?name=didi, return : hello gykj
+Invoke : http://localhost:9301/hello?name=gykj, return : hello gykj
 $ curl localhost:9304/test
-Invoke : http://localhost:9302/hello?name=didi, return : hello gykj
+Invoke : http://localhost:9302/hello?name=gykj, return : hello gykj
 $ curl localhost:9304/test
-Invoke : http://localhost:9303/hello?name=didi, return : hello gykj
+Invoke : http://localhost:9303/hello?name=gykj, return : hello gykj
 ```
 
 可以看到，两次不同请求的时候，真正实际调用的服务提供者实例是不同的，也就是说，通过LoadBalancerClient接口在获取服务实例的时候，已经实现了对服务提供方实例的负载均衡。
