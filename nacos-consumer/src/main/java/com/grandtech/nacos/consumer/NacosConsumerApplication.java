@@ -10,10 +10,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @EnableDiscoveryClient
 @SpringBootApplication
-public class NacosClientApplication {
+public class NacosConsumerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(NacosClientApplication.class, args);
+        SpringApplication.run(NacosConsumerApplication.class, args);
     }
 
     /*
