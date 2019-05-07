@@ -256,7 +256,7 @@ Data ID在Nacos中，我们可以理解为就是一个Spring Cloud应用的配�
 第二步：在nacos-provider应用的配置文件中，增加环境配置：spring.profiles.active=dev
 
 第三步：启动应用，调用接口查看返回结果
-用curl或者postman等工具，访问接口: localhost:9301/test，一切正常的话，将返回Nacos中配置的值“nacos-provider-dev”。
+用curl或者postman等工具，访问接口: localhost:9301/title，一切正常的话，将返回Nacos中配置的值“nacos-provider-dev”。
 然后，再通过Nacos页面，修改这个内容，点击发布之后，再访问接口，可以看到返回结果变了。
 
 第四步：然后再修改第二步中的spring.profiles.active=test，重复第三步，发现返回的结果变成了“nacos-provider-test”
