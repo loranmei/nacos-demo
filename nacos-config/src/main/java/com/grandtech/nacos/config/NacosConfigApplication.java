@@ -25,26 +25,26 @@ public class NacosConfigApplication {
         @Value("${myconfig.title:}")
         private String title;
 
-        @GetMapping("/test")
-        public String hello() {
+        @GetMapping("/title")
+        public String title() {
             return title;
         }
 
 
-        @Value("${myconfig.title2:}")
-        private String title2;
+        @Value("${myconfig.oss:}")
+        private String oss;
 
-        @GetMapping("/test2")
-        public String hello2() {
-            return title2;
+        @GetMapping("/oss")
+        public String oss() {
+            return oss;
         }
 
-        @Value("${myconfig.title3:}")
-        private String title3;
+        @Value("${myconfig.log:}")
+        private String log;
 
-        @GetMapping("/test3")
-        public String hello3() {
-            return title3;
+        @GetMapping("/log")
+        public String log() {
+            return log;
         }
 
     }

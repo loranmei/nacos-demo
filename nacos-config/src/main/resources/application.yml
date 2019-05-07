@@ -1,0 +1,7 @@
+server:
+  port: 9307
+spring:
+  application:
+    name: nacos-config
+#  profiles:
+#    active: dev
