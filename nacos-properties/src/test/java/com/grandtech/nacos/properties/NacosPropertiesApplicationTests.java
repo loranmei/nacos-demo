@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class NacosConfig2ApplicationTests {
+public class NacosPropertiesApplicationTests {
 
     @Test
     public void contextLoads() {

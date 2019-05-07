@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
+
 @RestController
 @RequestMapping
 public class TestController {
@@ -12,7 +14,7 @@ public class TestController {
     TestService testService;
 
     @GetMapping("/test")
-    Integer test() {
-        return testService.test();
+    String test() {
+        return "result:" + testService.test().toString() + "," + new Date().toString();
     }
 }

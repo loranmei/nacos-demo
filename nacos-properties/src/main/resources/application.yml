@@ -1,19 +1,23 @@
 server:
   port: 9308
 spring:
-#  profiles:
-#    active: dev
   application:
     name: nacos-properties
-  datasource:
-    url: jdbc:mysql://192.168.1.53:3306/nacos_config?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
-    username: root
-    password: Gykj123.
-
-mybatis:
-  mapper-locations: mapper/**Mapper.xml
-  configuration:
-    map-underscore-to-camel-case: true
-logging:
-  level:
-    com.grandtech.nacos: debug
+  profiles:
+    active: dev
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: 192.168.1.53:8848
+#  datasource:
+#    url: jdbc:mysql://192.168.1.53:3306/nacos_config?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+#    username: root
+#    password: Gykj123.
+#
+#mybatis:
+#  mapper-locations: mapper/**Mapper.xml
+#  configuration:
+#    map-underscore-to-camel-case: true
+#logging:
+#  level:
+#    com.grandtech.nacos: debug
