@@ -1,5 +1,3 @@
-# Spring Cloud Alibaba Nacos
-
 ## Nacos服务注册与发现
 Nacos致力于帮助我们发现、配置和管理微服务。Nacos提供了一组简单易用的特性集，可以实现动态服务发现、服务配置。
 
@@ -549,5 +547,190 @@ public class TestApplication {
 
 使用@FeignClient注解来指定这个接口所要调用的服务名称，接口中定义的各个函数使用Spring MVC的注解就可以来绑定服务提供方的REST接口，比如下面就是绑定nacos-provider服务的/hello接口的例子。最后，在Controller中，注入了Client接口的实现，并调用hello方法来触发对服务提供方的调用。
 
+## 使用nacos-config配置数据库连接
+nacos-config可以实现持久化配置和动态刷新配置，我们可以将一些通用的配置放置在持久化配置中，也可以提供给不同的微服务使用同一个配置文件。
 
+### 新建Module
 
+新建模块nacos-properties
+
+添加nacos依赖项
+
+```
+<!--nacos服务注册与发现-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+</dependency>
+
+<!--nacos配置中心-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+</dependency>
+```
+
+添加数据库连接驱动
+
+```
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-jdbc</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.mybatis.spring.boot</groupId>
+    <artifactId>mybatis-spring-boot-starter</artifactId>
+    <version>2.0.1</version>
+</dependency>
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <scope>runtime</scope>
+</dependency>
+```
+
+启动项添加EnableDiscoveryClient
+
+```
+@SpringBootApplication
+@EnableDiscoveryClient
+public class NacosPropertiesApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(NacosPropertiesApplication.class, args);
+    }
+
+}
+```
+
+新增一个接口，查询数据库
+
+```
+@RestController
+@RequestMapping
+public class TestController {
+    @Autowired
+    TestService testService;
+
+    @GetMapping("/test")
+    String test() {
+        return "result:" + testService.test().toString() + "," + new Date().toString();
+    }
+}
+```
+
+### 通过spring profiles指定配置文件
+
+nacos配置管理页面新增配置文件nacos-properties-dev.yaml，配置格式：YAML，配置内容：
+
+```
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.1.53:8848
+  datasource:
+    url: jdbc:mysql://192.168.1.53:3306/nacos_config?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: Gykj123.
+mybatis:
+  mapper-locations: mapper/**Mapper.xml
+  configuration:
+    map-underscore-to-camel-case: true
+#logging:
+#  level:
+#    com.grandtech.nacos.properties.test.dao: debug
+```
+
+新增bootstrap.properties，指定nacos注册服务器和配置服务器地址
+
+```
+#nacos配置中心地址（只能配置在bootstrap中）
+spring.cloud.nacos.config.server-addr=192.168.1.53:8848
+#nacos注册中心地址（可配置在yaml中）
+#spring.cloud.nacos.discovery.server-addr=192.168.1.53:8848
+```
+
+bootstrap.properties中增加配置，指定配置文件后缀，并通过profiles指定配置文件
+
+```
+#nacos配置文件后缀（只能配置在bootstrap中）
+spring.cloud.nacos.config.file-extension=yaml
+#通过profiles指定配置文件（可配置在yaml中）
+#spring.profiles.active=dev
+```
+
+新增application.yml
+
+```
+server:
+  port: 9308
+spring:
+  application:
+    name: nacos-properties
+  profiles:
+    active: dev
+```
+
+在这个例子中我们通过bootstrap指定配置中心地址，指定配置文件后缀，application.yml通过profiles指定要加载nacos-properties-dev.yaml配置文件
+
+启动模块时，会自动去nacos配置中心寻找nacos-properties-dev.yaml配置文件，并自动使用配置内容进行启动
+
+nacos-properties-dev.yaml中我们配置了mysql数据库连接，启动之后调用接口发现可以正常返回数据
+
+### 共享配置文件
+上述例子中配置了一个数据库连接，然后通过profiles指定启动的是nacos-properties-dev.yaml配置文件，如果这个数据库连接是一个通用的配置项，可以在多个spring-boot模块中使用，那么可以使用共享配置文件
+
+nacos配置管理页面新增配置文件nacos-properties-mysql.yaml，配置格式：YAML，配置内容：
+
+```
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.1.53:8848
+  datasource:
+    url: jdbc:mysql://192.168.1.53:3306/nacos_config?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: Gykj123.
+mybatis:
+  mapper-locations: mapper/**Mapper.xml
+  configuration:
+    map-underscore-to-camel-case: true
+#logging:
+#  level:
+#    com.grandtech.nacos.properties.test.dao: debug
+```
+
+新增bootstrap.properties，指定nacos注册服务器和配置服务器地址
+
+```
+#nacos配置中心地址（只能配置在bootstrap中）
+spring.cloud.nacos.config.server-addr=192.168.1.53:8848
+#nacos注册中心地址（可配置在yaml中）
+#spring.cloud.nacos.discovery.server-addr=192.168.1.53:8848
+```
+
+bootstrap.properties中增加配置，指定共享的配置文件名，并配置刷新
+
+```
+#当我们加载多个配置存在相同的key时，后面加载的配置会覆盖之前加载的配置
+spring.cloud.nacos.config.shared-dataids=nacos-properties-mysql.yaml
+spring.cloud.nacos.config.refreshable-dataids=nacos-properties-mysql.yaml
+```
+
+新增application.yml
+
+```
+server:
+  port: 9308
+spring:
+  application:
+    name: nacos-properties
+```
+
+在这个例子中我们通过bootstrap指定配置中心地址，并指定共享的配置文件名
+
+启动模块时，会自动去nacos配置中心寻找nacos-properties-mysql.yaml配置文件，并自动使用配置内容进行启动
+
+nacos-properties-mysql.yaml中我们配置了mysql数据库连接，启动之后调用接口发现可以正常返回数据
